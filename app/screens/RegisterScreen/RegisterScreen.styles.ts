@@ -6,18 +6,14 @@ import Colors from '../../styles/Colors';
 export default StyleSheet.create({
   container: {
     ...AppStyles.screen,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flex: 1,
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center'
   },
-  text: {
-    marginBottom: 30
+  title:{
+    ...AppStyles.title,
   },
-  buttonsContainer: {
-    width: "100%",
+  formContainer: {
+    width: '100%',
   },
-  noDataText: {
-    fontSize: heightPercentageToDP(3),
-    color: Colors.gray_717174,
-  }
 });

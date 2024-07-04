@@ -6,7 +6,7 @@ import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 import HeaderStyles from './Header.styles';
 import {ScreenName} from '../../constants/screen.constants';
-import {Route} from '@react-navigation/native';
+import {CommonActions, Route} from '@react-navigation/native';
 
 interface IProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -18,7 +18,17 @@ const Header = ({navigation, route}: IProps) => {
 
   const navigateToHomeScreenAndReset = () => {
     if (isHomeScreen) return;
-    navigation.navigate(ScreenName.PRODUCTS, {reset: true});
+
+    const handleLogout = () => {
+      navigation.dispatch(CommonActions.reset({
+        index: 0,
+        routes: [
+          { name: ScreenName.PRODUCTS }
+        ],
+      }));
+    };
+
+    handleLogout();
   };
 
   return (

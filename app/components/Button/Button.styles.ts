@@ -8,13 +8,14 @@ export default StyleSheet.create({
     height: heightPercentageToDP(7),
     backgroundColor: Colors.gray_d3d3d3,
     justifyContent: "center",
-    marginTop: heightPercentageToDP(2)
+    marginTop: heightPercentageToDP(2),
+    borderRadius: 7,
   },
   primaryButton: {
     backgroundColor: Colors.primary,
   },
   secondaryButton: {
-    backgroundColor: Colors.redButton,
+    backgroundColor: Colors.red_d80404,
   },
   text: {
     textAlign: "center",

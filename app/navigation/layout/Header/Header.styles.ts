@@ -6,6 +6,7 @@ export default StyleSheet.create({
     height: heightPercentageToDP(5.5),
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
   text: {
     fontSize: heightPercentageToDP(1.9),

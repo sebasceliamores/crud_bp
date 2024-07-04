@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {View, TextInput} from 'react-native';
 import styles from './SearchBar.styles';
-import Colors from '../../styles/Colors';
 import { IProduct } from '../../models/Product.model';
 
 interface SearchBarProps {
@@ -29,16 +28,14 @@ const SearchBar = ({data, setDataManager}: SearchBarProps) => {
     <View style={styles.container}>
       <TextInput
         placeholder={'Search...'}
-        underlineColorAndroid="transparent"
+        // underlineColorAndroid="black"
         style={styles.searchInput}
         value={searchTerm}
         onChangeText={setSearchTerm}
-        autoCapitalize="none"
         onSubmitEditing={searchFilter}
         returnKeyType={'search'}
-        autoCorrect={false}
-        selectionColor={Colors.black}
-        testID="searchTextInput"
+        // autoCorrect={false}
+        // testID="searchTextInput"
       />
     </View>
   );

@@ -5,6 +5,10 @@ const AppStyles = StyleSheet.create({
   screen: {
     margin: heightPercentageToDP(5),
   },
+  title: {
+    fontSize: heightPercentageToDP(3),
+    alignSelf: "flex-start"
+  }
 });
 
 export default AppStyles;

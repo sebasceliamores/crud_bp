@@ -1,3 +1,4 @@
+import React from 'react';
 import {Text, TouchableOpacity, ViewStyle, StyleProp} from 'react-native';
 import styles from './Button.styles';
 import {ButtonType} from '../../enums/ButtonType';
@@ -6,7 +7,7 @@ interface ButtonProps {
   text: string;
   onPress: () => void;
   disabled?: boolean;
-  buttonType: ButtonType;
+  buttonType?: ButtonType;
   customStyles?: StyleProp<ViewStyle>;
 }
 
@@ -26,7 +27,7 @@ const Button = (props: ButtonProps) => {
 
   return (
     <TouchableOpacity
-      style={[styles.defaultButton, setButtonStylesByType()]}
+      style={[styles.defaultButton, customStyles, setButtonStylesByType()]}
       onPress={onPress}
       disabled={disabled}>
       <Text style={[styles.text, buttonType === ButtonType.SECONDARY && styles.textWhite]}>{text}</Text>

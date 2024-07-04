@@ -1,16 +1,6 @@
 import {useState, useEffect} from 'react';
-import {HttpMethod} from '../enums/HttpMethod'
-
-interface UseFetchResult<T> {
-  data: T | null;
-  loading: boolean;
-  error: Error | null;
-}
-
-interface FetchOptions extends RequestInit {
-  baseURL?: string;
-  timeout?: number;
-}
+import {HttpMethod} from '../enums/HttpMethod';
+import {FetchOptions, UseFetchResult} from '../models/Fetch.model';
 
 const useFetch = <T>(
   url: string,
@@ -56,8 +46,7 @@ const useFetch = <T>(
 
       try {
         const response = await fetch(fetchUrl, fetchOptions);
-        console.log({response});
-        
+
         clearTimeout(timeoutId);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

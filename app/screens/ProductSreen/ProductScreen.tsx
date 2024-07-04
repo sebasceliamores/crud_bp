@@ -5,25 +5,16 @@ import ProductList from './components/ProductList/ProductList';
 import Button from '../../components/Button/Button';
 import {ButtonType} from '../../enums/ButtonType';
 import styles from './ProductScreen.styles';
-import {IProduct} from '../../models/Product.model';
-import useFetch from '../../hooks/useFetch';
-import {authorId, baseURL} from '../../constants/api.constants';
 import SearchBar from '../../components/SearchBar/SearchBar';
+import { ScreenName } from '../../navigation/constants/screen.constants';
+import api from '../../services/api';
 
 interface ProductScreenProps {
   navigation: ProductScreenNavigationProp;
 }
 
-const url = '/bp/products';
-const options = {
-  baseURL,
-  headers: {
-    authorId,
-  },
-};
-
 const ProductScreen = ({navigation}: ProductScreenProps) => {
-  const {data, loading, error} = useFetch<IProduct[]>(url, options);
+  const {data, loading, error} = api.getProducts();
   const [dataManager, setDataManager] = useState(data);
 
   useEffect(() => {
@@ -51,8 +42,8 @@ const ProductScreen = ({navigation}: ProductScreenProps) => {
       <View style={styles.buttonsContainer}>
         <Button
           text={'Agregar'}
-          onPress={() => {}}
           buttonType={ButtonType.PRIMARY}
+          onPress={() => navigation.navigate(ScreenName.REGISTER_PRODUCT)}
         />
       </View>
     </View>

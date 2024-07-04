@@ -1,87 +1,101 @@
-// import { IDeviceAuthentication } from "@common-login/models/device-authentication.model";
-// import { IJWTToken } from "@common-login/models/jwt-token.model";
-// import { ITrackError } from "@core/TrackError/model/track-error.model";
-// import { MOBILE_APP_NAME } from "@shared/constants/global.constants";
-// import { MMKVStorage } from "@store/mmkv-storage";
-// import apisauce, { ApiResponse, ApisauceInstance } from "apisauce";
-// import { IPinCodeSearch } from "@common-admin/model/pincode-search.model";
-// import { ICustomFile } from "@app/commonFeatures/DownloadFiles/model/references";
-// import { callGetImages } from "./download-files.api";
-// import { IKpQueueSettings, IKpQueueStation } from "@models/kp-queue-settings.model";
+import {authorId, baseURL} from '../constants/api.constants';
+import useFetch from '../hooks/useFetch';
+import {IProduct} from '../models/Product.model';
+import {HttpMethod} from '../enums/HttpMethod';
+import {FetchOptions} from '../models/Fetch.model';
 
-// export interface API {
-// }
+const productsUrl = '/bp/products';
+const options = {
+  baseURL,
+  headers: {
+    authorId,
+  },
+};
 
-// const create = (baseURL = ""): API => {
-//   const api: ApisauceInstance = apisauce.create({
-//     baseURL,
-//     headers: {
-//       "Cache-Control": "no-cache",
-//     },
-//     timeout: 10000,
-//   });
+const fetchData = async (url: string, options?: FetchOptions) => {
+  const {
+    baseURL = '',
+    timeout = 10000,
+    headers,
+    method = HttpMethod.GET,
+    body,
+    ...restOptions
+  } = options || {};
 
-//   const setBaseURL = (serverUrl: string): void => {
-//     api.setBaseURL(serverUrl);
-//   };
+  const fetchUrl = baseURL ? `${baseURL}${url}` : url;
+  const controller = new AbortController();
+  const signal = controller.signal;
 
-//   const setAuthToken = (authToken: string): Promise<void> => {
-//     return new Promise(resolve => {
-//       const tokens: { authToken: string } = {
-//         authToken,
-//       };
-//       MMKVStorage.setItem("@PerfectKpQueue:tokens", JSON.stringify(tokens));
-//       (global as any).authToken = authToken;
-//       api.setHeader("CustomerTypeCode", "DEFAULT");
-//       api.setHeader("Authorization", "Bearer " + authToken);
-//       resolve();
-//     });
-//   };
+  const fetchOptions: RequestInit = {
+    ...restOptions,
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+      ...headers,
+    },
+    signal,
+  };
 
-//   const removeAuthToken = (): Promise<void> => {
-//     return new Promise(resolve => {
-//       MMKVStorage.removeItem("@PerfectKpQueue:tokens");
-//       (global as any).authToken = null;
-//       api.deleteHeader("CustomerTypeCode");
-//       api.deleteHeader("Authorization");
-//       resolve();
-//     });
-//   };
+  if (body) {
+    fetchOptions.body = JSON.stringify(body);
+  }
 
-//   const autoLogin = (deviceAuth: IDeviceAuthentication) =>
-//     api.post<IJWTToken>("api/authenticate-mobile/auto-login/kp-queue", deviceAuth);
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeout);
 
-//   const getStation = () => api.get<IKpQueueStation>("api/station/kpqueue");
+  try {
+    const response = await fetch(fetchUrl, fetchOptions);
 
-//   const getSettingsByUserLogged = () => api.get<IKpQueueSettings>("api/perfect-kp-queue-settings/all/by-device");
+    clearTimeout(timeoutId);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    return {data: result, error: undefined};
+  } catch (err) {
+    if (err instanceof Error && err.name !== 'AbortError') {
+      return {data: undefined, error: err};
+    } else {
+      return {data: undefined, error: new Error('An unknown error occurred')};
+    }
+  }
+};
 
-//   const sendLoggingSupport = (loggingSupportFiles: FormData) =>
-//     api.put("api/logging-support", loggingSupportFiles, {
-//       headers: { "Content-Type": "multipart/form-data" },
-//     });
+const getProducts = () => {
+  return useFetch<IProduct[]>(productsUrl, {
+    ...options,
+    method: HttpMethod.GET,
+  });
+};
 
-//   const getAllEsperApiKeys = () => api.get<string[]>("api/external/all-esper-api-keys");
+const saveProduct = (product: IProduct) => {
+  return fetchData(productsUrl, {
+    ...options,
+    method: HttpMethod.POST,
+    body: product,
+  });
+};
 
-//   const validatePinCode = (pinCodeSearch: IPinCodeSearch) =>
-//     api.post<IPinCodeSearch>("api/external/organizations/validate-pin-code", pinCodeSearch);
+const updateProduct = (product: IProduct) => {
+  return fetchData(productsUrl, {
+    ...options,
+    method: HttpMethod.PUT,
+    body: product,
+  });
+};
 
-//   const getPinCode = () => api.post<IPinCodeSearch>("api/organizations/get-pin-code");
+const deleteProduct = (id: string) => {
+  return fetchData(productsUrl + `/?id=${id}`, {
+    ...options,
+    method: HttpMethod.DELETE,
+  });
+};
 
-//   const sendTrackError = (errors: Array<ITrackError>) =>
-//     api.post<Array<string>>("api/external/send-exception-mobile-email/by-mobile-app", {
-//       exceptionList: errors,
-//       mobileAppName: MOBILE_APP_NAME,
-//     });
-
-//   const getImages = async (customFile: ICustomFile, filePath: string) => callGetImages(customFile, filePath, api);
-
-//   const updateIpAddress = (stationMobileInfoDTO: IStationMobileInfo) =>
-//     api.post<void>("api/station/update-ip-address", stationMobileInfoDTO);
-
-//   return {
-//   };
-// };
-
-// export default {
-//   create,
-// };
+export default {
+  getProducts,
+  saveProduct,
+  updateProduct,
+  deleteProduct,
+};

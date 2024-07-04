@@ -6,6 +6,9 @@ import AppStyles from '../../../../styles/AppStyles';
 import ProductDetailStyles from './ProductDetail.styles';
 import {ButtonType} from '../../../../enums/ButtonType';
 import Button from '../../../../components/Button/Button';
+import { ScreenName } from '../../../../navigation/constants/screen.constants';
+import api from '../../../../services/api';
+import { CommonActions } from '@react-navigation/routers';
 
 interface Props {
   navigation: ProductDetailScreenNavigationProp;
@@ -16,15 +19,28 @@ interface Props {
   };
 }
 
+const resetStackToHomeScreen = (navigation: ProductDetailScreenNavigationProp) => {
+  navigation.dispatch(
+    CommonActions.reset({
+      index: 0,
+      routes: [{name: ScreenName.PRODUCTS}],
+    }),
+  );
+};
+
 const ProductDetail = ({navigation, route}: Props) => {
   // Implement your component logic here
   const detail = route.params.detail;
-  console.log('ProductDetail Screen', route.params);
   const releaseDate = new Date(detail.date_release!);
   const releaseDateFormatted = `${releaseDate.getDate()}/${releaseDate.getMonth()}/${releaseDate.getFullYear()}`;
 
   const revisionDate = new Date(detail.date_revision!);
   const revisionDateFormatted = `${revisionDate.getDate()}/${revisionDate.getMonth()}/${revisionDate.getFullYear()}`;
+
+  const handleDelete = async (id: string) => {
+    const response = await api.deleteProduct(id);
+    resetStackToHomeScreen(navigation);
+  }
 
   return (
     <View style={ProductDetailStyles.container}>
@@ -75,13 +91,12 @@ const ProductDetail = ({navigation, route}: Props) => {
       <View style={ProductDetailStyles.buttonsContainer}>
         <Button
           text={'Editar'}
-          onPress={() => {}}
+          onPress={() => navigation.navigate(ScreenName.REGISTER_PRODUCT, {detail})}
           buttonType={ButtonType.DEFAULT}
         />
         <Button
           text={'Eliminar'}
-          onPress={() => {}}
-          customStyles={{height: 200}}
+          onPress={() => handleDelete(detail.id)}
           buttonType={ButtonType.SECONDARY}
         />
       </View>
